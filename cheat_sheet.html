@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tmux cheat sheet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2330;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #f78166;
+    --accent4: #d2a8ff;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --kbd-bg: #21262d;
+    --kbd-border: #444c56;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 28px 24px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  header .subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .prefix-banner {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .prefix-banner strong {
+    color: var(--accent);
+    font-size: 13px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card.wide {
+    grid-column: span 2;
+  }
+
+  .card.full {
+    grid-column: span 3;
+  }
+
+  .card-header {
+    padding: 9px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-header.blue  { color: var(--accent);  background: rgba(88,166,255,0.07); }
+  .card-header.green { color: var(--accent2); background: rgba(63,185,80,0.07); }
+  .card-header.red   { color: var(--accent3); background: rgba(247,129,102,0.07); }
+  .card-header.purple{ color: var(--accent4); background: rgba(210,168,255,0.07); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  tr + tr td {
+    border-top: 1px solid var(--border);
+  }
+
+  td {
+    padding: 7px 14px;
+    vertical-align: middle;
+  }
+
+  td:first-child {
+    width: 46%;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  td:last-child {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  kbd {
+    display: inline-block;
+    background: var(--kbd-bg);
+    border: 1px solid var(--kbd-border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .sep {
+    color: var(--muted);
+    margin: 0 2px;
+    font-size: 10px;
+  }
+
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    background: rgba(63,185,80,0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .diagram-card {
+    padding: 14px;
+  }
+
+  .diagram {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+  }
+
+  .diagram .label {
+    color: var(--accent);
+  }
+  .diagram .label2 {
+    color: var(--accent2);
+  }
+  .diagram .label3 {
+    color: var(--accent4);
+  }
+
+  .note {
+    padding: 8px 14px;
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    font-style: italic;
+  }
+
+  .tip {
+    background: rgba(63,185,80,0.06);
+    border-top: 1px solid var(--border);
+    padding: 8px 14px;
+    font-size: 11px;
+    color: var(--accent2);
+  }
+
+  .tip strong { font-weight: 600; }
+
+  footer {
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>tmux</h1>
+  <span class="subtitle">cheat sheet · Ctrl+a config · zsh aliases</span>
+</header>
+
+<div class="prefix-banner">
+  <strong>Prefix: Ctrl+a</strong> &nbsp;—&nbsp; press this before any tmux command key &nbsp;·&nbsp; <strong>Alt+arrow</strong> navigates panes without a prefix
+</div>
+
+<div class="grid">
+
+  <!-- Sessions: Getting In & Out -->
+  <div class="card">
+    <div class="card-header blue">Sessions — in &amp; out</div>
+    <table>
+      <tr><td><code>tn &lt;name&gt;</code></td><td>New named session</td></tr>
+      <tr><td><code>ta &lt;name&gt;</code></td><td>Attach to session</td></tr>
+      <tr><td><code>tls</code></td><td>List all sessions</td></tr>
+      <tr><td><code>tk &lt;name&gt;</code></td><td>Kill session by name</td></tr>
+      <tr><td><code>tmux-here</code></td><td>New session named after current dir</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>d</kbd></td><td>Detach (leave running)</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>$</kbd></td><td>Rename current session</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>:kill-session</kbd></td><td>Kill from inside</td></tr>
+    </table>
+    <div class="tip"><strong>Tip:</strong> Detach is almost always what you want — session keeps running.</div>
+  </div>
+
+  <!-- Windows -->
+  <div class="card">
+    <div class="card-header green">Windows (tabs)</div>
+    <table>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>c</kbd></td><td>New window</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>n</kbd></td><td>Next window</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>p</kbd></td><td>Previous window</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>0–9</kbd></td><td>Jump to window by number</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>,</kbd></td><td>Rename current window</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>&amp;</kbd></td><td>Kill current window</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>w</kbd></td><td>Visual window picker</td></tr>
+    </table>
+    <div class="note">Windows start at 1 in this config (not 0).</div>
+  </div>
+
+  <!-- Panes -->
+  <div class="card">
+    <div class="card-header purple">Panes (splits)</div>
+    <table>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>|</kbd></td><td>Split vertical</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>-</kbd></td><td>Split horizontal</td></tr>
+      <tr><td><kbd>Alt</kbd>+<kbd>←↑↓→</kbd></td><td>Navigate panes (no prefix!)</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>z</kbd></td><td>Zoom pane (toggle fullscreen)</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>x</kbd></td><td>Kill current pane</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>q</kbd></td><td>Show pane numbers</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>{</kbd> / <kbd>}</kbd></td><td>Swap pane left/right</td></tr>
+    </table>
+    <div class="tip"><strong>Tip:</strong> Ctrl+a z to zoom into logs, then z again to restore.</div>
+  </div>
+
+  <!-- Dev Layout -->
+  <div class="card wide">
+    <div class="card-header green">Dev session layout — project workflow</div>
+    <table>
+      <tr>
+        <td><code>dev</code></td>
+        <td>From project dir — opens 3-pane layout and attaches (reattaches if exists)</td>
+      </tr>
+      <tr>
+        <td><code>dev &lt;name&gt; &lt;path&gt;</code></td>
+        <td>Named session from any directory</td>
+      </tr>
+      <tr>
+        <td>Pane 1 (top-left)</td>
+        <td>Claude Code — <code>claude</code> auto-started</td>
+      </tr>
+      <tr>
+        <td>Pane 2 (bottom-left)</td>
+        <td>Shell in project dir</td>
+      </tr>
+      <tr>
+        <td>Pane 3 (right)</td>
+        <td>App / logs — <code>npm run dev</code> or equivalent</td>
+      </tr>
+    </table>
+    <div class="note">Running <code>dev</code> when the session exists just reattaches — nothing is clobbered.</div>
+  </div>
+
+  <!-- Layout diagram -->
+  <div class="card">
+    <div class="card-header blue">Pane layout</div>
+    <div class="diagram-card">
+      <div class="diagram">
+<span class="label">┌──────────────┬──────────┐</span>
+<span class="label">│              │          │</span>
+<span class="label">│  Claude Code │  App /   │</span>
+<span class="label">│  (claude)    │  Logs    │</span>
+<span class="label">│              │          │</span>
+<span class="label">├──────────────┤          │</span>
+<span class="label">│  Terminal    │          │</span>
+<span class="label">│  (zsh)       │          │</span>
+<span class="label">└──────────────┴──────────┘</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copy mode & scrolling -->
+  <div class="card">
+    <div class="card-header red">Copy mode &amp; scrolling</div>
+    <table>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>[</kbd></td><td>Enter scroll/copy mode</td></tr>
+      <tr><td><kbd>↑ ↓</kbd> / <kbd>PgUp PgDn</kbd></td><td>Scroll through output</td></tr>
+      <tr><td><kbd>v</kbd></td><td>Begin selection (vi mode)</td></tr>
+      <tr><td><kbd>y</kbd></td><td>Yank (copy) selection</td></tr>
+      <tr><td><kbd>q</kbd> or <kbd>Esc</kbd></td><td>Exit copy mode</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>]</kbd></td><td>Paste buffer</td></tr>
+    </table>
+    <div class="note">Vi-style bindings enabled in this config.</div>
+  </div>
+
+  <!-- Misc -->
+  <div class="card">
+    <div class="card-header purple">Misc</div>
+    <table>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>?</kbd></td><td>Show all keybindings</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>t</kbd></td><td>Show clock</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>:</kbd></td><td>Command prompt</td></tr>
+      <tr><td><kbd>Ctrl+a</kbd> <kbd>r</kbd></td><td>Reload config</td></tr>
+      <tr><td><code>exit</code> / <kbd>Ctrl+d</kbd></td><td>Close current pane/shell</td></tr>
+    </table>
+  </div>
+
+  <!-- Closing things cleanly -->
+  <div class="card wide">
+    <div class="card-header red">Closing things — when to use what</div>
+    <table>
+      <tr>
+        <td><kbd>Ctrl+a</kbd> <kbd>d</kbd></td>
+        <td><strong style="color:var(--accent2)">Detach</strong> — leave session running, exit terminal safely. Best default.</td>
+      </tr>
+      <tr>
+        <td><code>exit</code> in pane</td>
+        <td>Close that pane's shell. Last pane closes the window; last window ends the session.</td>
+      </tr>
+      <tr>
+        <td><code>tk &lt;name&gt;</code></td>
+        <td>Kill session from outside — destroys layout and all processes in it.</td>
+      </tr>
+      <tr>
+        <td><kbd>Ctrl+a</kbd> <kbd>:kill-session</kbd></td>
+        <td>Kill session from inside.</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<footer>tmux · prefix: Ctrl+a · zsh aliases: tn ta tls tk tmux-here dev</footer>
+
+</body>
+</html>
