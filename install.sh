@@ -65,7 +65,30 @@ ok "Wrote $TMUX_CONF"
 actions+=("Installed $TMUX_CONF")
 
 # ---------------------------------------------------------------------------
-# Step 2: Append zsh helpers to ~/.zshrc (idempotent)
+# Step 2: Install TPM (Tmux Plugin Manager)
+# ---------------------------------------------------------------------------
+info "Installing Tmux Plugin Manager..."
+
+TPM_DIR="$HOME/.tmux/plugins/tpm"
+if [ -d "$TPM_DIR" ]; then
+    ok "TPM already installed at $TPM_DIR"
+else
+    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+    ok "Cloned TPM to $TPM_DIR"
+    actions+=("Installed TPM")
+fi
+
+# Install plugins (non-interactive)
+if command -v tmux &>/dev/null && [ -x "$TPM_DIR/bin/install_plugins" ]; then
+    "$TPM_DIR/bin/install_plugins" || warn "Plugin install requires a running tmux server — press prefix + I after starting tmux"
+    ok "Installed tmux plugins"
+    actions+=("Installed tmux plugins (resurrect, continuum)")
+else
+    warn "Start tmux and press prefix + I to install plugins"
+fi
+
+# ---------------------------------------------------------------------------
+# Step 3: Append zsh helpers to ~/.zshrc (idempotent)
 # ---------------------------------------------------------------------------
 info "Installing zsh helpers..."
 
@@ -126,6 +149,9 @@ printf '    Switch panes:     Alt+Arrow (no prefix)\n'
 printf '    Switch windows:   Shift+Left/Right (no prefix)\n'
 printf '    Reload config:    Ctrl+a r\n'
 printf '    Copy mode:        Ctrl+a [\n'
+printf '    Save session:     Ctrl+a Ctrl+s  (resurrect)\n'
+printf '    Restore session:  Ctrl+a Ctrl+r  (resurrect)\n'
+printf '    Install plugins:  Ctrl+a I        (TPM)\n'
 echo ""
 printf '  Backups saved to: %s\n' "$BACKUP_DIR"
 echo ""
